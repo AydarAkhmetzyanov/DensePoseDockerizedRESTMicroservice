@@ -15,9 +15,14 @@ ENV LD_LIBRARY_PATH /usr/local/caffe2_build/lib:${LD_LIBRARY_PATH}
 # Clone the Detectron repository
 RUN git clone https://github.com/facebookresearch/densepose /densepose
 
+COPY ./app.py /densepose/app.py
+
 # Install Python dependencies
 RUN pip install -r /densepose/requirements.txt
 
+RUN pip install Flask
+RUN pip install opencv-python
+RUN pip install requests
 # Install the COCO API
 RUN git clone https://github.com/cocodataset/cocoapi.git /cocoapi
 WORKDIR /cocoapi/PythonAPI
@@ -42,4 +47,7 @@ RUN cd DensePoseData && bash get_DensePose_COCO.sh
 
 RUN cd DensePoseData && bash get_eval_data.sh
 
+EXPOSE 5000
 
+
+CMD [ "python app.py --cfg configs/DensePose_ResNet101_FPN_s1x-e2e.yaml --output-dir DensePoseData/infer_out/ --image-ext jpg --wts https://dl.fbaipublicfiles.com/densepose/DensePose_ResNet101_FPN_s1x-e2e.pkl DensePoseData/demo_data/demo_im.jpg" ]
