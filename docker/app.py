@@ -82,13 +82,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def main(args):
-    logger = logging.getLogger(__name__)
-    merge_cfg_from_file("configs/DensePose_ResNet101_FPN_s1x-e2e.yaml")
-    cfg.NUM_GPUS = 1
-    args.weights = cache_url(args.weights, cfg.DOWNLOAD_CACHE)
-    assert_and_infer_cfg(cache_urls=False)
-    model = infer_engine.initialize_model_from_cfg(args.weights)
+def main(args, model, logger):
+
     dummy_coco_dataset = dummy_datasets.get_coco_dataset()
 
     if os.path.isdir(args.im_or_folder):
@@ -143,6 +138,20 @@ import cv2
 
 app = Flask(__name__)
 
+
+workspace.GlobalInit(['caffe2', '--caffe2_log_level=0'])
+setup_logging(__name__)
+
+args = parse_args()
+
+logger = logging.getLogger(__name__)
+merge_cfg_from_file("configs/DensePose_ResNet101_FPN_s1x-e2e.yaml")
+cfg.NUM_GPUS = 1
+args.weights = cache_url(args.weights, cfg.DOWNLOAD_CACHE)
+assert_and_infer_cfg(cache_urls=False)
+model = infer_engine.initialize_model_from_cfg(args.weights)
+
+
 @app.route('/')
 def hello_world():
     return 'To use openpose as a service you need to access /upload via POST. Full readme: '
@@ -158,8 +167,8 @@ def upload():
         #image = cv2.imread( "uploads/lastphoto.jpg", cv2.IMREAD_COLOR)
 
 
-        args = parse_args()
-        main(args)
+
+        main(args, model, logger)
 
         try:
             return send_file('DensePoseData/infer_out/demo_im_IUV.png',
@@ -169,7 +178,7 @@ def upload():
 
 
 
+
 if __name__ == '__main__':
-    workspace.GlobalInit(['caffe2', '--caffe2_log_level=0'])
-    setup_logging(__name__)
+
     app.run(debug=True, host='0.0.0.0', port=5000)
