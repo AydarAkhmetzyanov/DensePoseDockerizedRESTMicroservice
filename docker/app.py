@@ -49,21 +49,21 @@ def parse_args():
         '--cfg',
         dest='cfg',
         help='cfg model file (/path/to/model_config.yaml)',
-        default=None,
+        default="configs/DensePose_ResNet101_FPN_s1x-e2e.yaml",
         type=str
     )
     parser.add_argument(
         '--wts',
         dest='weights',
         help='weights model file (/path/to/model_weights.pkl)',
-        default=None,
+        default="https://dl.fbaipublicfiles.com/densepose/DensePose_ResNet101_FPN_s1x-e2e.pkl",
         type=str
     )
     parser.add_argument(
         '--output-dir',
         dest='output_dir',
         help='directory for visualization pdfs (default: /tmp/infer_simple)',
-        default='/tmp/infer_simple',
+        default='DensePoseData/infer_out/',
         type=str
     )
     parser.add_argument(
@@ -73,12 +73,7 @@ def parse_args():
         default='jpg',
         type=str
     )
-    parser.add_argument(
-        'im_or_folder', help='image or folder of images', default=None
-    )
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
+
     return parser.parse_args()
 
 
@@ -86,10 +81,7 @@ def main(args, model, logger):
 
     dummy_coco_dataset = dummy_datasets.get_coco_dataset()
 
-    if os.path.isdir(args.im_or_folder):
-        im_list = glob.iglob(args.im_or_folder + '/*.' + args.image_ext)
-    else:
-        im_list = [args.im_or_folder]
+    im_list = ["DensePoseData/demo_data/demo_im.jpg"]
 
     for i, im_name in enumerate(im_list):
         out_name = os.path.join(

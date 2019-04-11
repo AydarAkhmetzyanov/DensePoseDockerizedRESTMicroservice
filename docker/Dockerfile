@@ -1,6 +1,7 @@
 # Use Caffe2 image as parent image
 FROM caffe2/caffe2:snapshot-py2-cuda9.0-cudnn7-ubuntu16.04
 
+
 RUN apt-get update -y && \
     apt-get install -y python-pip python-dev wget nano
 
@@ -49,5 +50,11 @@ RUN cd DensePoseData && bash get_eval_data.sh
 
 EXPOSE 5000
 
+WORKDIR /densepose
 
-CMD [ "python app.py --cfg configs/DensePose_ResNet101_FPN_s1x-e2e.yaml --output-dir DensePoseData/infer_out/ --image-ext jpg --wts https://dl.fbaipublicfiles.com/densepose/DensePose_ResNet101_FPN_s1x-e2e.pkl DensePoseData/demo_data/demo_im.jpg" ]
+RUN cd /densepose
+
+ENTRYPOINT [ "python2" ]
+
+CMD [ "app.py" ]
+ 
