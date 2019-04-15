@@ -1,4 +1,4 @@
-Openpose dockerized flask microservice
+Densepose dockerized flask microservice
 
 Dockerized openpose web microservice based on flask with thin cpu implementation of pose estimation. Suitable for systems, when you need isolated pose estimation service. Microservice based on https://github.com/facebookresearch/DensePose/
 
